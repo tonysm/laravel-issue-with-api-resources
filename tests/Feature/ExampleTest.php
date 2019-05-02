@@ -33,4 +33,29 @@ class ExampleTest extends TestCase
         // Fails.
         $this->assertInstanceOf(Collection::class, $usersCollection->resource->getCollection());
     }
+
+    public function testIncludesArticlesCount()
+    {
+        $users = factory(User::class)
+            ->times(2)
+            ->states('withArticles')
+            ->create();
+
+        $response = $this->getJson('/api/users?include=articles_count');
+
+        $response->assertJsonStructure([
+            'included' => [
+                'articles',
+            ],
+        ]);
+
+        $response->assertJson([
+            'included' => [
+                'articles' => [
+                    $users->first()->id => $users->first()->articles->count(),
+                    $users->last()->id => $users->last()->articles->count(),
+                ],
+            ],
+        ]);
+    }
 }
