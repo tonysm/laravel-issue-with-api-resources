@@ -30,7 +30,7 @@ class UserCollection extends ResourceCollection
 
         return $this->additional([
             'included' => [
-                'articles' => $counts,
+                'articles_count' => $counts,
             ],
         ]);
     }

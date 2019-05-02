@@ -45,13 +45,13 @@ class ExampleTest extends TestCase
 
         $response->assertJsonStructure([
             'included' => [
-                'articles',
+                'articles_count',
             ],
         ]);
 
         $response->assertJson([
             'included' => [
-                'articles' => [
+                'articles_count' => [
                     $users->first()->id => $users->first()->articles->count(),
                     $users->last()->id => $users->last()->articles->count(),
                 ],
