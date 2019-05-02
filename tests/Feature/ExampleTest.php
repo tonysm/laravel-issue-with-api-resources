@@ -2,20 +2,35 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Tests\TestCase;
+use App\Http\Resources\UserCollection;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
+    use RefreshDatabase;
+
     public function testBasicTest()
     {
-        $response = $this->get('/');
+        factory(User::class)
+            ->times(3)
+            ->states('withArticles')
+            ->create();
 
-        $response->assertStatus(200);
+        $users = User::paginate();
+
+        $this->assertInstanceOf(LengthAwarePaginator::class, $users);
+        $this->assertInstanceOf(Collection::class, $users->getCollection());
+
+        $usersCollection = new UserCollection($users);
+
+        $this->assertInstanceOf(LengthAwarePaginator::class, $usersCollection->resource);
+        // Passes.
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersCollection->collection);
+        // Fails.
+        $this->assertInstanceOf(Collection::class, $usersCollection->resource->getCollection());
     }
 }

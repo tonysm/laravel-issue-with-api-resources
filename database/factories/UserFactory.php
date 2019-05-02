@@ -25,3 +25,11 @@ $factory->define(User::class, function (Faker $faker) {
         'remember_token' => Str::random(10),
     ];
 });
+
+$factory->defineAs(User::class,'withArticles', function () {
+    return [];
+});
+
+$factory->afterCreatingState(User::class, 'withArticles', function ($user) {
+    factory(\App\Article::class)->times(rand(1, 3))->create(['user_id' => $user->id]);
+});
